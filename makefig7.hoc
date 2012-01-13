@@ -1,0 +1,68 @@
+load_file("fig7.hoc")
+
+objref concentrations
+concentrations = new Vector()
+concentrations.append(0.02, 0.05, 0.1, 0.2)
+
+save_steps_per_ms = steps_per_ms
+save_dt = dt
+
+strdef tmpstr
+objref fig7graphs, fig7top, fig7bottom, fig7graph[4], another_scene_vec
+objref tmpxvec, tmpyvec
+tmpxvec=new Vector()	// holds quantites to be graphed
+tmpyvec=new Vector()	// holds quantites to be graphed
+
+tmpxvec.record(&t)
+tmpyvec.record(&total_count_ribbon_ca)
+
+proc graphmaker() {
+// ($1 graphnumber, $2 tstop, $3 steps_per_ms, $4 dt, $5 startx, $6 stopx, $7 starty, $8 stopy)
+fig7graph[$1] = new Graph()
+fig7graph[$1].size($5, $6, $7, $8)
+caconc[0].DC_Level = concentrations.x[$1]
+
+{tstop =$2 steps_per_ms=$3 dt=$4 init() run()}
+tmpyvec.line(fig7graph[$1], tmpxvec)
+sprint(tmpstr,"[Ca] = %5.3f mM",caconc[0].DC_Level)
+fig7graph[$1].label(.6,.2,tmpstr)
+
+}
+
+fig7graphs = new VBox()
+fig7graphs.intercept(1)
+
+// top graphs 
+
+  fig7top = new HBox()
+  fig7top.intercept(1)
+
+// graphmaker arguments:
+// ($1 graphnumber, $2 tstop, $3 steps_per_ms, $4 dt, $5 startx, $6 stopx, $7 starty, $8 stopy)
+    graphmaker(0,        750,               1,     1,      -100,      900,         0, 5500)
+    graphmaker(1,         50,               1,     1,       -10,       60,         0, 5500)
+
+  fig7top.intercept(0)
+  fig7top.map()
+
+
+// bottom graphs 
+
+  fig7bottom = new HBox()
+  fig7bottom.intercept(1)
+
+    graphmaker(2,         50,              10,    .1,       -10,       60,         0, 5500)
+    graphmaker(3,         50,              10,    .1,       -10,       60,         0, 5500)
+
+  fig7bottom.intercept(0)
+  fig7bottom.map()
+
+fig7graphs.intercept(0)
+fig7graphs.map()
+
+print " Note: the integration time step, dt, was made larger (less accurate)"
+print " for the figure 7 multiple plot window demo. dt has been changed back so "
+print " subsequent runs will be with the higher accuracy as found in the paper."
+steps_per_ms = save_steps_per_ms
+dt = save_dt
+

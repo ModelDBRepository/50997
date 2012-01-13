@@ -1,0 +1,3 @@
+load_file("fig8.hoc")
+load_file("fig8b.ses")
+{init() run()}

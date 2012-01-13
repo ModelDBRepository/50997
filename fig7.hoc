@@ -1,0 +1,59 @@
+load_file("nrngui.hoc")
+load_proc ("nrnmainmenu")
+create soma, bp
+soma {L=25 diam=25 nseg=2}
+bp {L=10 diam=10 nseg=1}
+
+// Pre synaptic mechanisms (L channel and Voltage Clamp)
+access bp
+objectvar calcium
+calcium = new caconc(0.5)
+
+objectvar synapse[50]
+access soma
+for i=0, 49{
+synapse[i] = new ribbon_ca(0.5)
+setpointer synapse[i].preCA1,caconc_caconc
+setpointer synapse[i].preCA2,caconc_caconc
+}
+
+// Pre synaptic mechanisms (L channel and Voltage Clamp)
+access bp
+insert gfbp
+insert cad
+depth_cad = 0.01
+taur_cad=30
+gcabar_gfbp =  0.00215
+gkbar_gfbp =   0
+gabar_gfbp =   0
+gkcbar_gfbp =  0
+gnabar_gfbp =  0
+objectvar bpclamp
+bpclamp = new VClamp(0.5)
+
+RateIn=0
+RVP = 5
+
+proc set_stim(){
+for i = 0, 49 {
+synapse[i].rate_constantIN = RateIn
+synapse[i].S = Sout
+synapse[i].Max_RVP = RVP
+}
+}
+
+objectvar vbox,vbox3, tempobj3
+
+proc rib_panel(){
+        vbox3 = new VBox()
+        vbox3.intercept(1)
+
+        xpanel("Single Release Site")
+        xvalue("Rate IN","RateIn",1, "set_stim()")
+	  xvalue("Rouze output","Sout",1, "set_stim()")
+	  xvalue("RVP","RVP",1, "set_stim()")
+        xpanel()
+        vbox3.intercept(0)
+        vbox3.map
+}
+xopen("fig7.ses")

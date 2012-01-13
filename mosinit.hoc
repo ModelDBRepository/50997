@@ -1,0 +1,34 @@
+load_file("nrngui.hoc")
+
+strdef tstr
+
+xpanel("Figures for Sikora et al, 2005")
+xlabel("Press a button to create the figure")
+xradiobutton("7", "restart(\"makefig7\")")
+xradiobutton("8a", "restart(\"makefig8a\")")
+xradiobutton("8b", "restart(\"makefig8b\")")
+xradiobutton("8c", "restart(\"makefig8c\")")
+xradiobutton("8c_250", "restart(\"makefig8c_250ms\")")
+xradiobutton("9-11", "restart(\"fig9-11\")")
+xlabel("Figures 9-11 demo requires \"Init & \Run\" to be pressed")
+xlabel("so that parameters can be changed beforehand if desired.")
+xpanel(5,100)
+
+pwmcnt = PWManager[0].count // the initial gui should not be dismissed
+
+proc restart() {local i
+	objref graphItem, save_window_
+	for i=0, n_graph_lists-1 {
+		graphList[i].remove_all()
+	}
+	flush_list.remove_all()
+	fast_flush_list.remove_all()
+	doNotify()
+	for (i= PWManager[0].count-1; i >= pwmcnt; i -= 1) {
+		PWManager[0].close(i)
+		doNotify()
+	}
+	
+	sprint(tstr, "%s.hoc", $s1)
+	load_file(1, tstr)
+}

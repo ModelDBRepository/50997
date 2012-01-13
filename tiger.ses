@@ -1,0 +1,176 @@
+load_file("nrngui.hoc")
+objectvar save_window_, rvp_
+objectvar scene_vector_[9]
+objectvar ocbox_, ocbox_list_, scene_, scene_list_
+{ocbox_list_ = new List()  scene_list_ = new List()}
+{pwman_place(11,125,1)}
+{
+xpanel("RunControl", 0)
+v_init = -65
+xvalue("Init","v_init", 1,"stdinit()", 1, 1 )
+xbutton("Init & Run","run()")
+xbutton("Stop","stoprun=1")
+runStopAt = 5000
+xvalue("Continue til","runStopAt", 1,"{continuerun(runStopAt) stoprun=1}", 1, 1 )
+runStopIn = 1
+xvalue("Continue for","runStopIn", 1,"{continuerun(t + runStopIn) stoprun=1}", 1, 1 )
+xbutton("Single Step","steprun()")
+t = 5000
+xvalue("t","t", 2 )
+tstop = 5000
+xvalue("Tstop","tstop", 1,"tstop_changed()", 0, 1 )
+dt = 0.025
+xvalue("dt","dt", 1,"setdt()", 0, 1 )
+steps_per_ms = 40
+xvalue("Points plotted/ms","steps_per_ms", 1,"setdt()", 0, 1 )
+xcheckbox("Quiet",&stdrun_quiet,"")
+realtime = 3241
+xvalue("Real Time","realtime", 0,"", 0, 1 )
+xpanel(14,556)
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(0,5000,-67,23)
+scene_vector_[2] = save_window_
+{save_window_.view(0, -67, 5000, 90, 395, 831, 288.96, 90.88)}
+graphList[0].append(save_window_)
+save_window_.save_name("graphList[0].")
+save_window_.label(0.786274, 0.190921, "Fig9-F", 2, 1, 0, 0, 1)
+save_window_.addvar("soma.v( 0.5 )", 1, 1, 0.66901, 0.967093, 2)
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(0,5000,0,0.014)
+scene_vector_[3] = save_window_
+{save_window_.view(0, 0, 5000, 0.014, 386, 188, 296.64, 96.64)}
+graphList[2].append(save_window_)
+save_window_.save_name("graphList[2].")
+save_window_.addvar("preSyn.cai( 0.5 )", 1, 1, 0.617891, 0.943131, 2)
+save_window_.addvar("preSyn2.cai( 0.5 )", 2, 1, 0.617891, 0.928754, 2)
+save_window_.label(0.729965, 0.270624, "Fig9-B", 2, 1, 0, 0, 1)
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(0,5000,-62,-25)
+scene_vector_[4] = save_window_
+{save_window_.view(0, -62, 5000, 37, 380, 26, 300.48, 102.4)}
+graphList[0].append(save_window_)
+save_window_.save_name("graphList[0].")
+save_window_.addexpr("bpclamp.amp[0]", 1, 1, 0.640256, 0.986262, 2)
+save_window_.addvar("bpclamp2.amp[0]", 2, 1, 0.640256, 0.985843, 2)
+save_window_.label(0.757188, 0.393211, "Fig9-A", 2, 1, 0, 0, 1)
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(0,5000,0,1.3)
+scene_vector_[5] = save_window_
+{save_window_.view(0, 0, 5000, 1.3, 389, 505, 288, 99.52)}
+graphList[2].append(save_window_)
+save_window_.save_name("graphList[2].")
+save_window_.label(0.797033, 0.252202, "Fig9-D", 2, 1, 0, 0, 1)
+save_window_.addvar("synapse[0].gluConc_dAMPA", 1, 1, 0.34544, 1.0087, 2)
+save_window_.addvar("synapse[0].gluConc_NMDA", 1, 1, 0.362984, 1.01905, 2)
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(0,5000,0,79)
+scene_vector_[6] = save_window_
+{save_window_.view(0, 0, 5000, 79, 386, 348, 295.68, 94.72)}
+graphList[2].append(save_window_)
+save_window_.save_name("graphList[2].")
+save_window_.addexpr("synapse[0].Orate", 1, 1, 0.611502, 0.919169, 2)
+save_window_.label(0.74165, 0.380472, "Fig9-C", 2, 1, 0, 0, 1)
+}
+{
+ocbox_ = new VBox()
+ocbox_list_.prepend(ocbox_)
+ocbox_.intercept(1)
+}
+{
+xpanel("Single Release Site", 0)
+GMAX = 0.00256
+xvalue("dAMPA gmax","GMAX", 1,"set_stim()", 0, 0 )
+GMAXN = 0.00011
+xvalue("NMDA gmax","GMAXN", 1,"set_stim()", 0, 0 )
+xpanel()
+}
+{
+ocbox_ = ocbox_list_.object(0)
+ocbox_.intercept(0)
+ocbox_.map("nrniv", 30, 409, 237.12, 88.32)
+}
+objref ocbox_
+{
+xpanel("VClamp[2] at soma(0.5)", 0)
+xlabel("VClamp[2] at soma(0.5)")
+soma_clamp.dur[0] = 0
+xvalue("dur[0]","soma_clamp.dur[0]", 1,"", 0, 1 )
+soma_clamp.dur[1] = 0
+xvalue("dur[1]","soma_clamp.dur[1]", 1,"", 0, 1 )
+soma_clamp.dur[2] = 0
+xvalue("dur[2]","soma_clamp.dur[2]", 1,"", 0, 1 )
+soma_clamp.amp[0] = -65
+xvalue("amp[0]","soma_clamp.amp[0]", 1,"", 0, 1 )
+soma_clamp.amp[1] = 0
+xvalue("amp[1]","soma_clamp.amp[1]", 1,"", 0, 1 )
+soma_clamp.amp[2] = 0
+xvalue("amp[2]","soma_clamp.amp[2]", 1,"", 0, 1 )
+soma_clamp.gain = 100000
+xvalue("gain","soma_clamp.gain", 1,"", 0, 1 )
+soma_clamp.rstim = 1
+xvalue("rstim","soma_clamp.rstim", 1,"", 0, 1 )
+soma_clamp.tau1 = 0.001
+xvalue("tau1","soma_clamp.tau1", 1,"", 0, 1 )
+soma_clamp.tau2 = 0
+xvalue("tau2","soma_clamp.tau2", 1,"", 0, 1 )
+soma_clamp.e0 = -31.863
+xvalue("e0","soma_clamp.e0", 1,"", 0, 1 )
+soma_clamp.vo0 = 3.1863e+06
+xvalue("vo0","soma_clamp.vo0", 1,"", 0, 1 )
+soma_clamp.vi0 = -65
+xvalue("vi0","soma_clamp.vi0", 1,"", 0, 1 )
+soma_clamp.fac = 0
+xvalue("fac","soma_clamp.fac", 1,"", 0, 1 )
+soma_clamp.i = 0
+xvalue("i","soma_clamp.i", 0,"", 0, 1 )
+soma_clamp.e = -31.8627
+xvalue("e","soma_clamp.e", 0,"", 0, 1 )
+soma_clamp.vo = 3.18627e+06
+xvalue("vo","soma_clamp.vo", 0,"", 0, 1 )
+soma_clamp.vi = -65
+xvalue("vi","soma_clamp.vi", 0,"", 0, 1 )
+xpanel(747,57)
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(0,5000,-0.05,-9.31323e-10)
+scene_vector_[7] = save_window_
+{save_window_.view(0, -0.05, 5000, 0.05, 393, 667, 288.96, 99.52)}
+graphList[1].append(save_window_)
+save_window_.save_name("graphList[1].")
+save_window_.label(0.272425, 0.144695, "for VClamp set dur[0] to 5000ms.", 2, 1, 0, 0, 1)
+save_window_.label(0.777409, 0.414791, "Fig9-E", 2, 1, 0, 0, 1)
+save_window_.addvar("soma_clamp.i", 1, 1, 0.8, 0.9, 2)
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(0,5000,0,1)
+scene_vector_[8] = save_window_
+{save_window_.view(0, 0, 5000, 1, 227, 282, 696, 227.2)}
+graphList[2].append(save_window_)
+save_window_.save_name("graphList[2].")
+save_window_.label(0.110247, 0.905968, "This simulation replicates Fig.9 in the paper. Fig.9-E is obtained using a soma voltage clamp", 2, 1, 0, 0, 1)
+save_window_.label(0.109809, 0.448124, "Note that the rate expressed in Fig9-C here is for the entire 10 release sites of the synapse.", 2, 1, 0, 0, 1)
+save_window_.label(0.111554, 0.735579, "Fig10-P in the paper will by default be replicated in Fig9-F here where AMPA conductance ", 2, 1, 0, 0, 1)
+save_window_.label(0.112777, 0.655473, "is set at 256nS. and NMDA at 110pS.", 2, 1, 0, 0, 1)
+save_window_.label(0.111878, 0.57134, "Fig10-E,F and O may also be replicated by changing the AMPA and NMDA gmax", 2, 1, 0, 0, 1)
+save_window_.label(0.111692, 0.815819, "A total of 96 ribbon synapses are positioned on a traced ON ganglion cell.", 2, 1, 0, 0, 1)
+save_window_.label(0.108966, 0.253521, "The lower trace in Fig. 11 may be replicated by setting gnabar_spike = 0.", 2, 1, 0, 0, 1)
+save_window_.label(0.107586, 0.177465, "The upper trace will require commenting-in the AMPA modulator rates in ribbon_tiger.mod", 2, 1, 0, 0, 1)
+save_window_.label(0.108966, 0.376056, "In the paper rate is expressed for one release site.", 2, 1, 0, 0, 1)
+save_window_.label(0.108966, 0.09, "Adjust the parameters as desired and then press \"Init & Run\".", 2, 1, 0, 0, 1)
+
+save_window_.xaxis(3)
+}
+objectvar scene_vector_[1]
+{doNotify()}

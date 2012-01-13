@@ -1,0 +1,349 @@
+// replace cad with cas in ganglion cell
+load_file("nrngui.hoc")
+load_proc ("nrnmainmenu")
+load_file("gc.nrn")
+
+create initseg, narrowr, axon,  preSyn, preSyn2
+
+initseg { nseg = int(45/15) diam=1 L=45 }
+narrowr { nseg = int(90/15) diam=0.4 L=90 }
+axon{ nseg = int(1000/15) diam=1 L=1000 }
+
+connect soma(1),initseg(0)
+connect initseg(1),narrowr(0)
+connect narrowr(1),axon(0)
+
+
+forall{
+insert cas
+taur_cas=1.5
+}
+/*
+The [Ca++] is detected at two depths in the presynaptic bipolar cell.
+This is implemented by two compartments which are identical
+except for the depth at which the calcium shell is set.
+*/
+objectvar bpclamp, bpclamp2
+// Pre synaptic mechanisms (L channel and Voltage Clamp)
+preSyn{
+insert tsbp
+uninsert cas
+insert cad
+L=10
+diam=10
+depth_cad = 0.025
+taur_cad=0.1
+gcabar_tsbp =  0.0012
+bpclamp = new VClamp(0.5)
+bpclamp.dur[0]=5500
+}
+preSyn2{
+insert tsbp
+uninsert cas
+insert cad
+L=10
+diam=10
+depth_cad = 0.05
+taur_cad=0.18
+gcabar_tsbp =  0.0012
+bpclamp2 = new VClamp(0.5)
+bpclamp2.dur[0]=5500
+}
+
+// Read the voltage file and play through the Voltage Clamps
+objref f1, vec, vec2
+f1 = new File()
+f1.ropen("bp.dat")
+vec = new Vector()
+NumScan=vec.scanf(f1,192000,1,1)
+f1.close()
+vec2 = new Vector()
+vec2 = vec.c
+vec.play(&bpclamp.amp[0],0.025)
+vec2.play(&bpclamp2.amp[0],0.025)
+
+//////////
+forall{ // except the bipolar cells which are uninserted below
+insert spike
+// dendritic channel densities
+gcabar_spike =  0.002
+gkbar_spike =   0.012
+gabar_spike =   0.036
+gkcbar_spike =  0.000001
+gnabar_spike =  0.025
+}
+soma{
+insert spike
+gcabar_spike =  0.0015
+gkbar_spike =   0.018
+gabar_spike =   0.054
+gkcbar_spike =  0.000065
+gnabar_spike =  0.10
+}
+initseg {
+insert spike
+gcabar_spike = 0.0015
+gkbar_spike = 0.018
+gabar_spike = 0.054
+gkcbar_spike = 0.000065
+gnabar_spike = 0.125 
+}
+narrowr {
+insert spike
+gcabar_spike = 0.0
+gkbar_spike = 0.018
+gabar_spike = 0.054
+gkcbar_spike = 0.000065
+gnabar_spike = 0.1
+}
+axon {
+insert spike
+gcabar_spike = 0.0
+gkbar_spike = 0.018
+gabar_spike = 0.0
+gkcbar_spike = 0.000065
+gnabar_spike = 0.07
+}
+
+forall{
+mod_modulator = 0
+ena=35
+ek=-75
+cao=1.8
+cai=.0001
+insert pas
+g_pas= 1/70000
+Ra=110
+global_ra=110
+e_pas=-65
+}
+
+access preSyn
+uninsert spike
+access preSyn2
+uninsert spike
+
+/* Synapses are positioned onto ganglion cell and connected presynaptically to bipolars
+   Each synapse has at its disposal the presynaptic [Ca++] at two depths, but at any
+   timestep only uses one in determining the rate constant.
+*/
+objectvar synapse[23]
+for i=0, 11{
+access dend1[i]
+synapse[i] = new ribbon_tiger(0.5)
+setpointer synapse[i].preCA1,preSyn.cai(0.5)
+setpointer synapse[i].preCA2,preSyn2.cai(0.5)
+synapse[i].gmax=0.00128
+synapse[i].gmaxN=0.0001
+synapse[i].mg = 0.5
+}
+ 
+objectvar synapse2[23]
+for i=0, 11{
+access dend1[i]
+synapse2[i] = new ribbon_tiger(0.5)
+setpointer synapse2[i].preCA1,preSyn.cai(0.5)
+setpointer synapse2[i].preCA2,preSyn2.cai(0.5)
+synapse2[i].gmax=0.00128
+synapse[i].gmaxN=0.0001
+synapse2[i].mg = 0.5
+}
+
+objectvar synapse3[23]
+for i=0, 11{
+access dend1[i]
+synapse3[i] = new ribbon_tiger(0.5)
+setpointer synapse3[i].preCA1,preSyn.cai(0.5)
+setpointer synapse3[i].preCA2,preSyn2.cai(0.5)
+synapse3[i].gmax=0.00128
+synapse3[i].gmaxN=0.0001
+synapse3[i].mg = 0.5
+}
+
+
+
+access dend1[19]
+synapse[12] = new ribbon_tiger(0.5)
+setpointer synapse[12].preCA1,preSyn.cai(0.5)
+setpointer synapse[12].preCA2,preSyn2.cai(0.5)
+access dend2[0]
+synapse[13] = new ribbon_tiger(0.5)
+setpointer synapse[13].preCA1,preSyn.cai(0.5)
+setpointer synapse[13].preCA2,preSyn2.cai(0.5)
+access dend2[1]
+synapse[14] = new ribbon_tiger(0.5)
+setpointer synapse[14].preCA1,preSyn.cai(0.5)
+setpointer synapse[14].preCA2,preSyn2.cai(0.5)
+access dend2[10]
+synapse[15] = new ribbon_tiger(0.5)
+setpointer synapse[15].preCA1,preSyn.cai(0.5)
+setpointer synapse[15].preCA2,preSyn2.cai(0.5)
+access dend3[0]
+synapse[16] = new ribbon_tiger(0.5)
+setpointer synapse[16].preCA1,preSyn.cai(0.5)
+setpointer synapse[16].preCA2,preSyn2.cai(0.5)
+access dend1[22]
+synapse[17] = new ribbon_tiger(0.5)
+setpointer synapse[17].preCA1,preSyn.cai(0.5)
+setpointer synapse[17].preCA2,preSyn2.cai(0.5)
+access dend4[0]
+synapse[18] = new ribbon_tiger(0.5)
+setpointer synapse[18].preCA1,preSyn.cai(0.5)
+setpointer synapse[18].preCA2,preSyn2.cai(0.5)
+access dend5[0]
+synapse[19] = new ribbon_tiger(0.5)
+setpointer synapse[19].preCA1,preSyn.cai(0.5)
+setpointer synapse[19].preCA2,preSyn2.cai(0.5)
+access dend6[0]
+synapse[20] = new ribbon_tiger(0.5)
+setpointer synapse[20].preCA1,preSyn.cai(0.5)
+setpointer synapse[20].preCA2,preSyn2.cai(0.5)
+access dend6[1]
+synapse[21] = new ribbon_tiger(0.5)
+setpointer synapse[21].preCA1,preSyn.cai(0.5)
+setpointer synapse[21].preCA2,preSyn2.cai(0.5)
+access dend6[2]
+synapse[22] = new ribbon_tiger(0.5)
+setpointer synapse[22].preCA1,preSyn.cai(0.5)
+setpointer synapse[22].preCA2,preSyn2.cai(0.5)
+
+access dend1[19]
+synapse2[12] = new ribbon_tiger(0.5)
+setpointer synapse2[12].preCA1,preSyn.cai(0.5)
+setpointer synapse2[12].preCA2,preSyn2.cai(0.5)
+access dend2[0]
+synapse2[13] = new ribbon_tiger(0.5)
+setpointer synapse2[13].preCA1,preSyn.cai(0.5)
+setpointer synapse2[13].preCA2,preSyn2.cai(0.5)
+access dend2[1]
+synapse2[14] = new ribbon_tiger(0.5)
+setpointer synapse2[14].preCA1,preSyn.cai(0.5)
+setpointer synapse2[14].preCA2,preSyn2.cai(0.5)
+access dend2[10]
+synapse2[15] = new ribbon_tiger(0.5)
+setpointer synapse2[15].preCA1,preSyn.cai(0.5)
+setpointer synapse2[15].preCA2,preSyn2.cai(0.5)
+access dend3[0]
+synapse2[16] = new ribbon_tiger(0.5)
+setpointer synapse2[16].preCA1,preSyn.cai(0.5)
+setpointer synapse2[16].preCA2,preSyn2.cai(0.5)
+access dend1[22]
+synapse2[17] = new ribbon_tiger(0.5)
+setpointer synapse2[17].preCA1,preSyn.cai(0.5)
+setpointer synapse2[17].preCA2,preSyn2.cai(0.5)
+access dend4[0]
+synapse2[18] = new ribbon_tiger(0.5)
+setpointer synapse2[18].preCA1,preSyn.cai(0.5)
+setpointer synapse2[18].preCA2,preSyn2.cai(0.5)
+access dend5[0]
+synapse2[19] = new ribbon_tiger(0.5)
+setpointer synapse2[19].preCA1,preSyn.cai(0.5)
+setpointer synapse2[19].preCA2,preSyn2.cai(0.5)
+access dend6[0]
+synapse2[20] = new ribbon_tiger(0.5)
+setpointer synapse2[20].preCA1,preSyn.cai(0.5)
+setpointer synapse2[20].preCA2,preSyn2.cai(0.5)
+access dend6[1]
+synapse2[21] = new ribbon_tiger(0.5)
+setpointer synapse2[21].preCA1,preSyn.cai(0.5)
+setpointer synapse2[21].preCA2,preSyn2.cai(0.5)
+access dend6[2]
+synapse2[22] = new ribbon_tiger(0.5)
+setpointer synapse2[22].preCA1,preSyn.cai(0.5)
+setpointer synapse2[22].preCA2,preSyn2.cai(0.5)
+
+access dend1[19]
+synapse3[12] = new ribbon_tiger(0.5)
+setpointer synapse3[12].preCA1,preSyn.cai(0.5)
+setpointer synapse3[12].preCA2,preSyn2.cai(0.5)
+access dend2[0]
+synapse3[13] = new ribbon_tiger(0.5)
+setpointer synapse3[13].preCA1,preSyn.cai(0.5)
+setpointer synapse3[13].preCA2,preSyn2.cai(0.5)
+access dend2[1]
+synapse3[14] = new ribbon_tiger(0.5)
+setpointer synapse3[14].preCA1,preSyn.cai(0.5)
+setpointer synapse3[14].preCA2,preSyn2.cai(0.5)
+access dend2[10]
+synapse3[15] = new ribbon_tiger(0.5)
+setpointer synapse3[15].preCA1,preSyn.cai(0.5)
+setpointer synapse3[15].preCA2,preSyn2.cai(0.5)
+access dend3[0]
+synapse3[16] = new ribbon_tiger(0.5)
+setpointer synapse3[16].preCA1,preSyn.cai(0.5)
+setpointer synapse3[16].preCA2,preSyn2.cai(0.5)
+access dend1[22]
+synapse3[17] = new ribbon_tiger(0.5)
+setpointer synapse3[17].preCA1,preSyn.cai(0.5)
+setpointer synapse3[17].preCA2,preSyn2.cai(0.5)
+access dend4[0]
+synapse3[18] = new ribbon_tiger(0.5)
+setpointer synapse3[18].preCA1,preSyn.cai(0.5)
+setpointer synapse3[18].preCA2,preSyn2.cai(0.5)
+access dend5[0]
+synapse3[19] = new ribbon_tiger(0.5)
+setpointer synapse3[19].preCA1,preSyn.cai(0.5)
+setpointer synapse3[19].preCA2,preSyn2.cai(0.5)
+access dend6[0]
+synapse3[20] = new ribbon_tiger(0.5)
+setpointer synapse3[20].preCA1,preSyn.cai(0.5)
+setpointer synapse3[20].preCA2,preSyn2.cai(0.5)
+access dend6[1]
+synapse3[21] = new ribbon_tiger(0.5)
+setpointer synapse3[21].preCA1,preSyn.cai(0.5)
+setpointer synapse3[21].preCA2,preSyn2.cai(0.5)
+access dend6[2]
+synapse3[22] = new ribbon_tiger(0.5)
+setpointer synapse3[22].preCA1,preSyn.cai(0.5)
+setpointer synapse3[22].preCA2,preSyn2.cai(0.5)
+
+
+
+GMAX = 0.00256
+GMAXN = 0.00011
+ABSR=0
+
+proc set_stim(){ // Used by the control panel defined below
+for i = 0, 22 {
+synapse[i].gmax = GMAX
+synapse[i].gmaxN = GMAXN
+synapse[i].AbsRefract = ABSR
+synapse[i].mg = 0.5
+}
+for i= 0, 22 {
+synapse2[i].gmax = GMAX
+synapse2[i].gmaxN = GMAXN
+synapse2[i].AbsRefract = ABSR
+synapse2[i].mg = 0.5
+}
+for i = 0, 22 {
+synapse3[i].gmax = GMAX
+synapse3[i].gmaxN = GMAXN
+synapse3[i].AbsRefract = ABSR
+synapse3[i].mg = 0.5
+}
+
+}
+
+set_stim()
+
+objectvar vbox,vbox3, tempobj3
+
+proc receptor_panel(){
+        vbox3 = new VBox()
+        vbox3.intercept(1)
+
+        xpanel("Single Release Site")
+        xvalue("dAMPA gmax","GMAX",1, "set_stim()")
+        xvalue("NMDA gmax","GMAXN",1, "set_stim()")
+//        xvalue("Absolute Refractory", "ABSR",1, "set_stim()")
+
+        xpanel()
+        vbox3.intercept(0)
+        vbox3.map
+}
+access soma
+objectvar soma_clamp
+soma_clamp = new VClamp(0.5)
+
+xopen("tiger.ses")

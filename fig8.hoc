@@ -1,0 +1,118 @@
+load_file("nrngui.hoc")
+load_proc ("nrnmainmenu")
+create soma, bp, bp2
+soma {L=25 diam=25 nseg=2}
+bp {L=10 diam=10 nseg=1}
+bp2 {L=10 diam=10 nseg=1}
+// Pre synaptic mechanisms (L channel and Voltage Clamp)
+access bp
+insert cad
+insert gfbp
+
+access bp2
+insert cad
+insert gfbp
+
+
+
+objectvar synapse[50]
+access soma
+insert spike
+gcabar_spike =  0.0015
+gkbar_spike =   0.018
+gabar_spike =   0.054
+gkcbar_spike =  0.000065
+gnabar_spike =  0.10 
+insert cas
+for i=0, 49{
+synapse[i] = new ribbon_ca(0.5)
+setpointer synapse[i].preCA1,bp.cai(0.5)
+setpointer synapse[i].preCA2,bp2.cai(0.5)
+}
+objectvar somaclamp
+somaclamp=new VClamp(0.5)
+
+
+soma{ 
+mod_modulator = 0
+ena=35
+ek=-75 
+cao=1.8
+cai=.0001
+insert pas
+g_pas= 1/70000
+Ra=110
+global_ra=110
+e_pas=-65
+}
+// Pre synaptic mechanisms (L channel and Voltage Clamp)
+access bp // Full RRP
+insert pas
+g_pas= 1/70000
+Ra=110
+global_ra=110
+e_pas=-65
+depth_cad = 0.025
+taur_cad=0.8
+gcabar_gfbp =  0.0012
+objectvar bpclamp
+bpclamp = new VClamp2(0.5)
+
+access bp2 // Less than Full RRP
+insert pas
+g_pas= 1/70000
+Ra=110
+global_ra=110
+e_pas=-65
+depth_cad = 0.05
+taur_cad=0.18
+gcabar_gfbp =  0.0012
+objectvar bpclamp2
+bpclamp2 = new VClamp2(0.5)
+
+RIN = 0.125
+TR = 0.8
+TR2 = 0.18
+MAXRVP=5
+GCABP = 0.0016
+GCABP2 = 0.0016
+dcad1 = 0.025
+dcad2 = 0.050
+// RS = 2.84985
+
+proc set_stim(){
+for i = 0, 49 {
+synapse[i].rate_constantIN = RIN
+synapse[i].Max_RVP = MAXRVP
+// synapse[i].S = RS
+}
+bp.taur_cad = TR
+bp2.taur_cad = TR2
+bp.gcabar_gfbp = GCABP
+bp2.gcabar_gfbp = GCABP2
+bp.depth_cad = dcad1
+bp2.depth_cad = dcad2
+}
+
+objectvar vbox,vbox3, tempobj3
+
+proc rate_panel(){
+        vbox3 = new VBox()
+        vbox3.intercept(1)
+
+        xpanel("")
+        xvalue("RC IN","RIN",1, "set_stim()")
+        xvalue("Taur BP","TR",1, "set_stim()")
+        xvalue("Taur BP-2","TR2",1, "set_stim()")
+        xvalue("MAX RVP","MAXRVP",1, "set_stim()")
+        xvalue("gcabar bp","GCABP",1, "set_stim()")
+        xvalue("gcabar bp2","GCABP2",1, "set_stim()")
+        xvalue("depth_cad bp","dcad1",1, "set_stim()")
+        xvalue("depth_cad bp2","dcad2",1, "set_stim()")
+//        xvalue("R&S rateout","RS",1, "set_stim()")
+
+        xpanel()
+        vbox3.intercept(0)
+        vbox3.map
+}
+

@@ -1,0 +1,193 @@
+load_file("nrngui.hoc")
+objectvar save_window_, rvp_
+objectvar scene_vector_[4]
+objectvar ocbox_, ocbox_list_, scene_, scene_list_
+{ocbox_list_ = new List()  scene_list_ = new List()}
+{pwman_place(935,30,1)}
+{
+xpanel("RunControl", 0)
+v_init = -65
+xvalue("Init","v_init", 1,"stdinit()", 1, 1 )
+xbutton("Init & Run","run()")
+xbutton("Stop","stoprun=1")
+runStopAt = 5
+xvalue("Continue til","runStopAt", 1,"{continuerun(runStopAt) stoprun=1}", 1, 1 )
+runStopIn = 1
+xvalue("Continue for","runStopIn", 1,"{continuerun(t + runStopIn) stoprun=1}", 1, 1 )
+xbutton("Single Step","steprun()")
+t = 500
+xvalue("t","t", 2 )
+tstop = 500
+xvalue("Tstop","tstop", 1,"tstop_changed()", 0, 1 )
+dt = 0.05
+xvalue("dt","dt", 1,"setdt()", 0, 1 )
+steps_per_ms = 20
+xvalue("Points plotted/ms","steps_per_ms", 1,"setdt()", 0, 1 )
+xcheckbox("Quiet",&stdrun_quiet,"")
+realtime = 44
+xvalue("Real Time","realtime", 0,"", 0, 1 )
+xpanel(53,132)
+}
+{
+xpanel("VClamp2[0] at bp(0.5)", 0)
+xlabel("VClamp2[0] at bp(0.5)")
+bpclamp.dur[0] = 0
+xvalue("dur[0]","bpclamp.dur[0]", 1,"", 0, 1 )
+bpclamp.dur[1] = 500
+xvalue("dur[1]","bpclamp.dur[1]", 1,"", 0, 1 )
+bpclamp.dur[2] = 1000
+xvalue("dur[2]","bpclamp.dur[2]", 1,"", 0, 1 )
+bpclamp.dur[3] = 0
+xvalue("dur[3]","bpclamp.dur[3]", 1,"", 0, 1 )
+bpclamp.dur[4] = 0
+xvalue("dur[4]","bpclamp.dur[4]", 1,"", 0, 1 )
+bpclamp.dur[5] = 0
+xvalue("dur[5]","bpclamp.dur[5]", 1,"", 0, 1 )
+bpclamp.amp[0] = -65
+xvalue("amp[0]","bpclamp.amp[0]", 1,"", 0, 1 )
+bpclamp.amp[1] = 0
+xvalue("amp[1]","bpclamp.amp[1]", 1,"", 0, 1 )
+bpclamp.amp[2] = -65
+xvalue("amp[2]","bpclamp.amp[2]", 1,"", 0, 1 )
+bpclamp.amp[3] = 0
+xvalue("amp[3]","bpclamp.amp[3]", 1,"", 0, 1 )
+bpclamp.amp[4] = 0
+xvalue("amp[4]","bpclamp.amp[4]", 1,"", 0, 1 )
+bpclamp.amp[5] = 0
+xvalue("amp[5]","bpclamp.amp[5]", 1,"", 0, 1 )
+bpclamp.gain = 100000
+xvalue("gain","bpclamp.gain", 1,"", 0, 1 )
+bpclamp.rstim = 1
+xvalue("rstim","bpclamp.rstim", 1,"", 0, 1 )
+bpclamp.tau1 = 0.001
+xvalue("tau1","bpclamp.tau1", 1,"", 0, 1 )
+bpclamp.tau2 = 0
+xvalue("tau2","bpclamp.tau2", 1,"", 0, 1 )
+bpclamp.e0 = 1.3444e-06
+xvalue("e0","bpclamp.e0", 1,"", 0, 1 )
+bpclamp.vo0 = -0.13444
+xvalue("vo0","bpclamp.vo0", 1,"", 0, 1 )
+bpclamp.vi0 = 2.6889e-06
+xvalue("vi0","bpclamp.vi0", 1,"", 0, 1 )
+bpclamp.fac = 0
+xvalue("fac","bpclamp.fac", 1,"", 0, 1 )
+bpclamp.i = -0.134446
+xvalue("i","bpclamp.i", 0,"", 0, 1 )
+bpclamp.e = 1.34443e-06
+xvalue("e","bpclamp.e", 0,"", 0, 1 )
+bpclamp.vo = -0.134443
+xvalue("vo","bpclamp.vo", 0,"", 0, 1 )
+bpclamp.vi = 2.68886e-06
+xvalue("vi","bpclamp.vi", 0,"", 0, 1 )
+xpanel(452,567)
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(0,500,-1320,7320)
+scene_vector_[2] = save_window_
+{save_window_.view(0, -1320, 500, 8640, 394, 33, 451.2, 329.92)}
+graphList[2].append(save_window_)
+save_window_.save_name("graphList[2].")
+save_window_.addvar("total_count_ribbon_ca", 1, 1, 0.229378, 0.964306, 2)
+}
+{
+xpanel("VClamp2[1] at bp2(0.5)", 0)
+xlabel("VClamp2[1] at bp2(0.5)")
+bpclamp2.dur[0] = 0
+xvalue("dur[0]","bpclamp2.dur[0]", 1,"", 0, 1 )
+bpclamp2.dur[1] = 500
+xvalue("dur[1]","bpclamp2.dur[1]", 1,"", 0, 1 )
+bpclamp2.dur[2] = 1000
+xvalue("dur[2]","bpclamp2.dur[2]", 1,"", 0, 1 )
+bpclamp2.dur[3] = 0
+xvalue("dur[3]","bpclamp2.dur[3]", 1,"", 0, 1 )
+bpclamp2.dur[4] = 0
+xvalue("dur[4]","bpclamp2.dur[4]", 1,"", 0, 1 )
+bpclamp2.dur[5] = 0
+xvalue("dur[5]","bpclamp2.dur[5]", 1,"", 0, 1 )
+bpclamp2.amp[0] = -65
+xvalue("amp[0]","bpclamp2.amp[0]", 1,"", 0, 1 )
+bpclamp2.amp[1] = 0
+xvalue("amp[1]","bpclamp2.amp[1]", 1,"", 0, 1 )
+bpclamp2.amp[2] = -65
+xvalue("amp[2]","bpclamp2.amp[2]", 1,"", 0, 1 )
+bpclamp2.amp[3] = 0
+xvalue("amp[3]","bpclamp2.amp[3]", 1,"", 0, 1 )
+bpclamp2.amp[4] = 0
+xvalue("amp[4]","bpclamp2.amp[4]", 1,"", 0, 1 )
+bpclamp2.amp[5] = 0
+xvalue("amp[5]","bpclamp2.amp[5]", 1,"", 0, 1 )
+bpclamp2.gain = 100000
+xvalue("gain","bpclamp2.gain", 1,"", 0, 1 )
+bpclamp2.rstim = 1
+xvalue("rstim","bpclamp2.rstim", 1,"", 0, 1 )
+bpclamp2.tau1 = 0.001
+xvalue("tau1","bpclamp2.tau1", 1,"", 0, 1 )
+bpclamp2.tau2 = 0
+xvalue("tau2","bpclamp2.tau2", 1,"", 0, 1 )
+bpclamp2.e0 = 2.0709e-06
+xvalue("e0","bpclamp2.e0", 1,"", 0, 1 )
+bpclamp2.vo0 = -0.20709
+xvalue("vo0","bpclamp2.vo0", 1,"", 0, 1 )
+bpclamp2.vi0 = 4.1418e-06
+xvalue("vi0","bpclamp2.vi0", 1,"", 0, 1 )
+bpclamp2.fac = 0
+xvalue("fac","bpclamp2.fac", 1,"", 0, 1 )
+bpclamp2.i = -0.207093
+xvalue("i","bpclamp2.i", 0,"", 0, 1 )
+bpclamp2.e = 2.07088e-06
+xvalue("e","bpclamp2.e", 0,"", 0, 1 )
+bpclamp2.vo = -0.207088
+xvalue("vo","bpclamp2.vo", 0,"", 0, 1 )
+bpclamp2.vi = 4.14177e-06
+xvalue("vi","bpclamp2.vi", 0,"", 0, 1 )
+xpanel(715,569)
+}
+{
+ocbox_ = new VBox()
+ocbox_list_.prepend(ocbox_)
+ocbox_.intercept(1)
+}
+{
+xpanel("", 0)
+RIN = 0.125
+xvalue("RC IN","RIN", 1,"set_stim()", 0, 0 )
+TR = 0.8
+xvalue("Taur BP","TR", 1,"set_stim()", 0, 0 )
+TR2 = 0.18
+xvalue("Taur BP-2","TR2", 1,"set_stim()", 0, 0 )
+MAXRVP = 5
+xvalue("MAX RVP","MAXRVP", 1,"set_stim()", 0, 0 )
+GCABP = 0.0012
+xvalue("gcabar bp","GCABP", 1,"set_stim()", 0, 0 )
+GCABP2 = 0.0012
+xvalue("gcabar bp2","GCABP2", 1,"set_stim()", 0, 0 )
+dcad1 = 0.025
+xvalue("depth_cad bp","dcad1", 1,"set_stim()", 0, 0 )
+dcad2 = 0.05
+xvalue("depth_cad bp2","dcad2", 1,"set_stim()", 0, 0 )
+xpanel()
+}
+{
+ocbox_ = ocbox_list_.object(0)
+ocbox_.intercept(0)
+ocbox_.map("nrniv", 998, 335, 242.88, 252.48)
+}
+objref ocbox_
+{
+save_window_ = new Graph(0)
+save_window_.size(0,500,0,1)
+scene_vector_[3] = save_window_
+{save_window_.view(0, 0, 500, 1, 53, 536, 300.48, 200.32)}
+graphList[2].append(save_window_)
+save_window_.save_name("graphList[2].")
+save_window_.label(0.172524, 0.896166, "Fig. 8A", 2, 1, 0, 0, 1)
+save_window_.label(0.0958466, 0.800319, "Vary the pulse-duration in the pre-synaptic", 2, 1, 0, 0, 1)
+save_window_.label(0.0990415, 0.675719, "cell by adjusting dur[1] in BOTH clamp", 2, 1, 0, 0, 1)
+save_window_.label(0.111821, 0.560703, "panels", 2, 1, 0, 0, 1)
+save_window_.label(0.108626, 0.436102, "The paper used an average of 10 runs", 2, 1, 0, 0, 1)
+save_window_.label(0.111821, 0.335463, "for each data point.", 2, 1, 0, 0, 1)
+save_window_.xaxis(3)
+}
+objectvar scene_vector_[1]
+{doNotify()}
