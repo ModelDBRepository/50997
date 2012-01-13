@@ -60,7 +60,7 @@ ASSIGNED {
 }
 	
 BREAKPOINT {
-	SOLVE state METHOD euler
+	SOLVE state METHOD derivimplicit
 					: printf("diam=%g\n", diam)
 }
 

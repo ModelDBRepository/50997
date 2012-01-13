@@ -43,3 +43,6 @@ instructions for running the simulation which are displayed in
 a message in a graph when run.
 
 Implementation details are best found in ribbon_tiger.mod
+
+20120113 Updated capump.mod casimple.mod from euler to derivimplicit
+as per http://www.neuron.yale.edu/phpbb/viewtopic.php?f=28&t=592
