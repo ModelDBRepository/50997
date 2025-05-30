@@ -14,8 +14,7 @@ Session files are called by the HOC file, except for fig8, where there are 4 dif
 
 Implementation details are best found in `ribbon_tiger.mod`.
 
+## Changelog
 20120113 Updated `capump.mod` `casimple.mod` from euler to derivimplicit as per [http://www.neuron.yale.edu/phpbb/viewtopic.php?f=28&t=592](http://www.neuron.yale.edu/phpbb/viewtopic.php?f=28&t=592)
 
----
-
-2025-05-27 – Standardized to Markdown.
+20250527 Standardized to Markdown.
